@@ -1,0 +1,87 @@
+@media (max-width: 1024px) {
+
+    body {
+        background-image: none;
+    }
+    
+    #top {
+        display: none;
+    }
+    
+    #all {
+        position: absolute;
+        width: 94%;
+        top: 3%;
+        left: 3%;
+        margin: 0 0 0 0;
+    }
+    
+    h1 {
+        font-size: 210%;
+        margin-top: 3%;
+    }
+    
+    h2 {
+        font-size: 130%;
+        margin-top: 0;
+    }
+    
+    #selection {
+        width: 26%;
+    }
+    
+    #selection h3 {
+        font-size: 100%;
+    }
+    
+    #inoutContain {
+        width: 72%;
+    }
+    
+    #inoutContain h3 {
+        font-size: 100%;
+        margin: 1em 0 1em 0;
+    }
+    
+    #userWeight {
+        height: 5%;
+        width: 40%;
+        font-size: 100%;
+    }
+    
+    button {
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+        width: 15em;
+    }
+    
+    .containCheck {
+        margin: 13% 0 13% 0;
+    }
+    
+    .containCheck:hover {
+        background-color: bisque;
+    }
+    
+    .checkSize {
+        height: 1.5em;
+        width: 1.5em;
+        margin-left: 15%;
+    }
+    
+    #output {
+        margin-bottom: 0.5em;
+    }
+    
+    #note {
+        font-size: 0.75em;
+    }
+    
+    #result {
+        font-size: 0.75em;
+    }
+    
+    #remainder {
+        font-size: 0.75em;
+    }
+}

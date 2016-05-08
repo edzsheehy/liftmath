@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang = "en">
+
+<head>
+    <meta charset = "utf-8">
+    <title>What's on the bar?</title>
+    <link rel = "icon"
+          href = "dyel.jpg">
+    <link type = "text/css"
+          rel = "stylesheet"
+          href = "barmath.css">
+    <link type = "text/css"
+          rel = "stylesheet"
+          href = "barmath-mobile.css">
+    <meta name = "viewport"
+          content = "width=device-width, initial-scale=1.0, user-scalable=no">
+    <script type = "text/javascript"
+            src = "https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script type = "text/javascript">
+        
+        // A jQuery initializer will provide the plate checkboxes.
+        // This is done through PHP so that a loop can easily create each <input> tag.
+        
+        $(init);
+        function init() {
+            $("#selection").load("checkboxes.php", function() { //loads checkboxes and matches height
+                var h = $("#selection").height();
+                $("#inoutContain").height(h);
+                $("#output").height(h*0.58); //scales the output <div> to be 58% of the #selection height.  Good for mobile devices.
+            }); 
+        }
+        
+        // This will match element height when the browser is resized.
+        // The .setTimeout() function is necessary so that window "maximize" and "restore" will respond to the event.
+        
+        $(window).resize(function() {
+            setTimeout(function() {
+                var h = $("#selection").height();
+                $("#inoutContain").height(h);
+                $("#output").height(h*0.58);
+            }, 150);
+        });
+        
+        // For mobile devices, matches element height when the screen orientation changes.
+        
+        $(window).on("orientationchange", function() {
+            var h = $("#selection").height();
+            $("#inoutContain").height(h);
+            $("#output").height(h*0.58);
+        });
+        
+        // This function returns the checkboxes to their default state, clears input and output fields.
+        
+        function reset() {
+            $("#selection").load("checkboxes.php");
+            $("#note").fadeOut("fast", function() {
+                $("#note").remove();
+            });
+            $("#result").fadeOut("fast", function() {
+                $("#result").remove();
+            });
+            $("#remainder").fadeOut("fast", function() {
+                $("#remainder").remove();
+            });
+            $("#userWeight").val("");
+        }
+        
+        // This function calculates what the user needs in plates for the input weight.
+        // Results are generated for each plate that is checked in the form of a list item.
+        
+        function getComp() {
+            var plateSelect = document.getElementsByName("checks"); // Links to the checkbox elements.
+            var userWeight = document.getElementById("userWeight"); // Links to the user weight input.
+            var baseWeight = userWeight.value; // Assigns weight value to a variable, to be used later.
+            
+            if (baseWeight <= 45) { // The bar is 45 lbs.  User weight cannot be less than or equal to.
+                alert("Weight is too low.");
+            } else if (baseWeight > 1155) { // Current world record for deadlift.  Can't be higher.
+                alert("You can't lift that.");
+            } else { // The actual calculation will now be run since the input weight is valid.
+                
+                baseWeight = (baseWeight-45)/2; // Removes the bar and divides the weight into one side.
+                
+                // This function delcaration takes a plate type as an argument.
+                // Determines how many plates of that weight are required.
+                
+                function plateCount(weight) {
+                    var run = true; // Boolean that will control the while loop.
+                    var count = 0; // Variable that will hold the incremented plate count.
+                    
+                    /* This while loop will run until no more plates of this type can be subtracted
+                       from one side of the user's input weight. */
+                    
+                    while(run) {
+                        if (baseWeight >= weight) {
+                            count++; // As long as another plate can be removed, increment the count.
+                            baseWeight = baseWeight - weight;
+                        } else {
+                            run = false; // Breaks out of the while loop when the count is maxxed out.
+                        }
+                    }
+                    if (count == 0) { // If a plate type is not a factor, the return is empty.
+                        return "";
+                    } else if (count == 1) { // If one plate is used, return a list item with the count.
+                        return "<li>(<span id = \"count\">" + count + "</span>) " + weight + " lb. plate";
+                    } else { // Same as above, except correct the grammar to be plural.
+                        return "<li>(<span id = \"count\">" + count + "</span>) " + weight + " lb. plates";
+                    }
+                } //end plateCount(weight) declaration.
+                
+                $("#answer").html("<ul id = \"result\"></ul>"); // adds an empty unordered list.
+                                
+                var barMath = ""; // Initializes an empty variable that will hold the list items.
+                
+                // This for loop steps through the array created by .getElementsByName().
+                // If the checkbox is checked, run plateCount() with the index value as the argument.
+                // As the loop progresses, barMath will be incremented with new list items.
+                
+                for (i=0; i<plateSelect.length; i++) {
+                    if (plateSelect[i].checked) {
+                        barMath += plateCount(plateSelect[i].value);
+                    }
+                }
+                
+                /* This if statement will alert the user of any remainder that can't be factored in
+                   to their desired composition.  Math.round() is used incase the user decides to
+                   input a decimal. */
+                
+                if (baseWeight != 0) {
+                    baseWeight *= 2; // This is for the total bar, so the figure has to be doubled.
+                    var remainder = "<p id = \"remainder\">" + Math.round(baseWeight*100)/100 + " lbs. omitted, based on your composition.</p>";
+                } else {
+                    remainder = ""; // Return empty if no remainder so that it's not undefined later.
+                }
+                
+                // All of the following will fade in on button press
+                
+                var note = "<p id = \"note\">You will need the following plates on <em>each</em> side:</p>";
+                $(note).prependTo("#answer").hide().fadeIn("slow"); // adds the note first
+                $("#result").html(barMath).hide().fadeIn("slow"); // populates the list
+                $(remainder).appendTo("#answer").hide().fadeIn("slow"); // shows remainder if existing 
+            }
+        }
+        
+    </script>
+</head>
+
+<body>
+    <h1 id = "top">liftmath.com</h1>
+    <div id = all>
+        <div id = "banner"
+             class = "window">
+            <h1>What's on the <span id = "movingTitle">BAR!?</span></h1>
+            <h2>by birdward</h2>
+        </div>
+        <div id = "selection"
+             class = "window">
+        </div>
+        <div id = "inoutContain"
+             class = "window">
+            <h3>Input desired weight for a <em>45 lb.</em> bar</h3>
+            <input type = "tel"
+                   placeholder = "Enter Lift"
+                   id = "userWeight" />
+            <button type = "button"
+                    onclick = "getComp()">
+                Calculate
+            </button>
+            <button type = "button"
+                    onclick = "reset()">
+                Reset
+            </button>
+            <div id = "output">
+                <div id = "answer"></div>
+            </div>
+        </div>    
+    </div> 
+</body>
+    
+</html>
